@@ -17,7 +17,7 @@ const Head = () => {
   const searchCache = useSelector((store) => store.search);
 
   const getSearchSuggestions = async () => {
-    console.log("API CALL - " + searchQuery);
+    //console.log("API CALL - " + searchQuery);
     const data = await fetch(SEARCH_API + searchQuery);
     const response = await data.json();
     //console.log(response[1]);
