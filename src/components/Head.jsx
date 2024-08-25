@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
 import {
   HAMBURGER_ICON,
@@ -7,25 +7,35 @@ import {
   SEARCH_API,
 } from "../utils/constants";
 import { useEffect, useState } from "react";
+import { cacheResult } from "../utils/searchSlice";
 
 const Head = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchCache = useSelector((store) => store.search);
 
   const getSearchSuggestions = async () => {
-    //console.log(searchQuery);
+    console.log("API CALL - " + searchQuery);
     const data = await fetch(SEARCH_API + searchQuery);
     const response = await data.json();
     //console.log(response[1]);
     setSuggestions(response[1]);
+    dispatch(cacheResult({ [searchQuery]: response[1] }));
   };
   useEffect(() => {
     /*make an api call after every key press but if the difference between 2 api calls is less
     than 200ms then decline the api call.This is done so as not to make too many API Calls.
      This is also called debouncing. */
-    const timer = setTimeout(() => getSearchSuggestions(), 300);
+    const timer = setTimeout(() => {
+      if (searchCache[searchQuery]) {
+        setSuggestions(searchCache[searchQuery]);
+      } else {
+        getSearchSuggestions();
+      }
+    }, 300);
+
     // at every re render, a new setTimeout will be created, so it is necessary to clear this timeout.
     return () => {
       clearTimeout(timer);
