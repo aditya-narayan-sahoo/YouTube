@@ -10,11 +10,10 @@ const LiveChat = () => {
 
   useEffect(() => {
     const i = setInterval(() => {
-      //console.log("API Polling");
       dispatch(
         addMessage({
           name: generateRandomName(),
-          message: makeRandomMessage(24),
+          message: makeRandomMessage(21) + " 🅐🅝🅢",
         })
       );
     }, 1500);
